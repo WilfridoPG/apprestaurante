@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: "95%",
   },
   btnRegister: {
-    backgroundColor: "#00a680",
+    backgroundColor: "rgb(137,144,246)",
   },
   iconRight: {
     color: "#c1c1c1",

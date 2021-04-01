@@ -16,8 +16,8 @@ export default function Navigation() {
       <Tab.Navigator
         initialRouteName="restaurants"
         tabBarOptions={{
-          inactiveTintColor: "#646464",
-          activeTintColor: "#00a680",
+          inactiveTintColor: "rgb(137,144,246)",
+          activeTintColor: "rgb(66,75,188)",
         }}
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color }) => screenOptions(route, color),
@@ -57,19 +57,19 @@ function screenOptions(route, color) {
   let iconName;
   switch (route.name) {
     case "restaurants":
-      iconName = "compass-outline";
+      iconName = "home";
       break;
     case "favorites":
-      iconName = "heart-outline";
+      iconName = "heart";
       break;
     case "top-restaurants":
-      iconName = "star-outline";
+      iconName = "star";
       break;
     case "search":
       iconName = "magnify";
       break;
     case "account":
-      iconName = "home-outline";
+      iconName = "account";
       break;
     default:
       break;

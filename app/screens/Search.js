@@ -23,6 +23,7 @@ export default function Search({ navigation }) {
         placeholder="Buscar tu restaurante"
         onChangeText={(e) => setSearch(e)}
         containerStyle={styles.searchBar}
+        inputContainerStyle={{ backgroundColor: "white" }}
         value={search}
       ></SearchBar>
       {search.length == 0 ? (
@@ -77,5 +78,8 @@ function NotFoundRestaurant() {
 const styles = StyleSheet.create({
   searchBar: {
     marginBottom: 20,
+    backgroundColor: "white",
+    borderBottomColor: "white",
+    borderTopColor: "white",
   },
 });

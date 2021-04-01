@@ -6,7 +6,11 @@ const Stack = createStackNavigator();
 
 export default function SearchStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: "rgb(87,95,206)" },
+      }}
+    >
       <Stack.Screen
         name="serach"
         component={Search}

@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   btnAddRestaurant: {
-    backgroundColor: "#00a680",
+    backgroundColor: "rgb(137,144,246)",
     margin: 20,
   },
   viewImage: {
