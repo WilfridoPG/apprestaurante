@@ -48,7 +48,6 @@ export default function ChangePasswordForm(props) {
       setLoading(true);
       await reauthenticate(formData.password)
         .then(async () => {
-          console.log("okok");
           await firebase
             .auth()
             .currentUser.updatePassword(formData.newPassword)
@@ -66,7 +65,6 @@ export default function ChangePasswordForm(props) {
             });
         })
         .catch(() => {
-          console.log("Erroroooo");
           tempoError = {
             password: "La contraseña no es correcta",
           };

@@ -12,32 +12,38 @@ export default function LoginForm({ toasRef }) {
   const [showPassword, setshowPassword] = useState(false);
   const [formData, setformData] = useState(defaultFormValue());
   const [loading, setloading] = useState(false);
+
   const navigation = useNavigation();
   const onChange = (e, type) => {
     setformData({ ...formData, [type]: e.nativeEvent.text });
   };
+
   const onSubmit = () => {
     if (isEmpty(formData.email) || isEmpty(formData.password)) {
       toasRef.current.show("Todos los campos son obligatorios");
     } else if (!validateEmail(formData.email)) {
       toasRef.current.show("El email no es correcto");
     } else {
-      console.log("okkk");
-      setloading(true);
+      // setloading(true);
+
       firebase
         .auth()
         .signInWithEmailAndPassword(formData.email, formData.password)
-        .then(() => {
-          setloading(false);
-          navigation.navigate("account");
+        .then((snashop) => {
+          console.log("datos---", snashop.user.emailVerified);
+          if (snashop.user.emailVerified) {
+            setloading(false);
+            navigation.navigate("account");
+          } else {
+            toasRef.current.show("Verifica tu correo electronico");
+            setloading(false);
+          }
         })
         .catch(() => {
           setloading(false);
           toasRef.current.show("Email o contraseña incorrecta");
         });
     }
-
-    console.log(formData);
   };
   return (
     <View style={styles.formContainer}>
@@ -68,6 +74,7 @@ export default function LoginForm({ toasRef }) {
           />
         }
       />
+
       <Button
         title="Iniciar Sesión"
         containerStyle={styles.btnContainerLogin}

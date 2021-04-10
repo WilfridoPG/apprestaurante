@@ -13,7 +13,6 @@ export default function Search({ navigation }) {
       fireSql
         .query(`SELECT * FROM restaurants WHERE name LIKE '${search}%'`)
         .then((response) => {
-          console.log("response", response);
           setRestaurants(response);
         });
   }, [search]);

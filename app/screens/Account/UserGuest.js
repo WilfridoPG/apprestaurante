@@ -11,9 +11,10 @@ export default function UserGuest() {
         source={require("../../../assets/img/user-guest.jpg")}
         style={styles.image}
       />
-      <Text style={styles.title}>Cosulta tu perfil de 5 Tenedores</Text>
+      <Text style={styles.title}>PaseaPet</Text>
       <Text style={styles.description}>
-        Como decribirias tu restaurante ? busca{" "}
+        ¡Se cuidador o paseador de perros y mascotas! Registra a tus mascotas de
+        forma gratuita para conseguir un buen cuidador o paseador.
       </Text>
       <View style={styles.viewbtn}>
         <Button

@@ -14,9 +14,8 @@ export default function InfoUser(props) {
   } = props;
 
   const changeAvatar = async () => {
-    console.log("chang3e avatar");
     const resultPermision = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    console.log("data..", resultPermision);
+
     const resultPermisionCamera = resultPermision.permissions.cameraRoll.status;
     if (resultPermisionCamera === "denied") {
       toastRef.current.show("Es necesario aceptar los permiso de la galería");
@@ -25,7 +24,7 @@ export default function InfoUser(props) {
         allowsEditing: true,
         aspect: [3, 4],
       });
-      console.log(result);
+
       if (result.cancelled) {
         toastRef.current.show("Ha cerrado la selección de la imágen");
       } else {
@@ -36,9 +35,7 @@ export default function InfoUser(props) {
           });
       }
     }
-    console.log(resultPermision);
   };
-
   const uploadImagen = async (uri) => {
     setloading(true);
     setloadingText("Actualizando Avatart");
@@ -77,6 +74,7 @@ export default function InfoUser(props) {
         }
       />
       <View>
+        <Text>Perfil Paseador</Text>
         <Text style={styles.displayName}>
           {displayName ? displayName : "Anonimo"}
         </Text>

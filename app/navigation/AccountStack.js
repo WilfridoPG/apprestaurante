@@ -3,7 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Account from "../screens/Account/Account";
 import Login from "../screens/Account/Login";
 import Register from "../screens/Account/Register";
-import { color } from "react-native-reanimated";
 
 const Stack = createStackNavigator();
 

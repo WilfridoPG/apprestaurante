@@ -46,8 +46,6 @@ export default function AddReviewRestaurant(props) {
           toastRef.current.show("Error al enviar la review");
           setIsLoading(false);
         });
-
-      console.log("ok", payload);
     }
   };
   const updateRestaurant = () => {

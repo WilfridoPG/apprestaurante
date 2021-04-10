@@ -11,7 +11,6 @@ export default function AccountOptions(props) {
   const [rederComponent, setrederComponent] = useState(null);
   const { userInfo, toastRef, setrealoadUserInfo } = props;
   const selectComponent = (key) => {
-    console.log("click", key);
     switch (key) {
       case "displayName":
         setrederComponent(
@@ -49,7 +48,6 @@ export default function AccountOptions(props) {
   };
   const menuOptions = generateOptions(selectComponent);
 
-  console.log("--->", props);
   return (
     <View>
       {map(menuOptions, (menu, index) => (
@@ -89,7 +87,7 @@ function generateOptions(selectComponent) {
       iconColorRight: "#ccc",
       onPress: () => selectComponent("displayName"),
     },
-    {
+    /*{
       title: "Cambiar Email",
       iconType: "material-community",
       iconNameLeft: "at",
@@ -97,7 +95,7 @@ function generateOptions(selectComponent) {
       iconNameRight: "chevron-right",
       iconColorRight: "#ccc",
       onPress: () => selectComponent("email"),
-    },
+    },*/
     {
       title: "Cambiar Contraseña",
       iconType: "material-community",

@@ -70,7 +70,6 @@ export default function Restaurant(props) {
                 "Error al eliminar el restaurante de favoritos"
               );
             });
-          console.log(doc.id);
         });
       });
   };
@@ -99,7 +98,6 @@ export default function Restaurant(props) {
           if (response.docs.length === 1) {
             setIsFavorite(true);
           }
-          console.log(response.docs.length);
         });
     }
   }, [userLogged, restaurant]);

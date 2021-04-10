@@ -1,24 +1,31 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Switch } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { validateEmail } from "../../utils/validation";
 import { size, isEmpty } from "lodash";
 import * as firebase from "firebase";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
+import ModalContainer from "../ModalContainer";
 
+import { firebaseApp } from "../../utils/firebase";
+import "firebase/firestore";
+const db = firebase.firestore(firebaseApp);
 export default function RegisterForm(props) {
-  console.log("valoores", props);
   const { toastRef } = props;
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setshowRepeatPassword] = useState(false);
   const [formData, setformData] = useState(defaultFormValue());
   const [loading, setLoading] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   const navigation = useNavigation();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (
+      isEmpty(formData.nombre) ||
       isEmpty(formData.email) ||
       isEmpty(formData.password) ||
       isEmpty(formData.repeatPassword)
@@ -33,13 +40,19 @@ export default function RegisterForm(props) {
         "La contraseña debe de tener al menos 6 caracteres"
       );
     } else {
-      setLoading(true);
-      firebase
+      //setLoading(true);
+      await firebase
         .auth()
         .createUserWithEmailAndPassword(formData.email, formData.password)
-        .then(() => {
-          setLoading(false);
-          navigation.navigate("account");
+        .then((snashop) => {
+          db.collection(`user`)
+            .add({ peseador: isEnabled, uid: snashop.user.uid })
+            .then(() => {
+              sendEmail();
+
+              setIsVisibleModal(true);
+            })
+            .catch(() => {});
         })
         .catch(() => {
           setLoading(false);
@@ -49,22 +62,51 @@ export default function RegisterForm(props) {
         });
     }
   };
+  const login = () => {
+    setIsVisibleModal(false);
+    navigation.navigate("login");
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
+  const sendEmail = () => {
+    var user = firebase.auth().currentUser;
+    user
+      .sendEmailVerification()
+      .then(() => {
+        user
+          .updateProfile({
+            displayName: formData.nombre,
+          })
+          .then(function () {
+            // Update successful.
+          })
+          .catch(function (error) {
+            // An error happened.
+          });
+      })
+      .catch(function (error) {});
+  };
   const onChange = (e, type) => {
     setformData({ ...formData, [type]: e.nativeEvent.text });
   };
   return (
     <View style={styles.formContainer}>
       <Input
+        placeholder="Nombre completo"
+        containerStyle={styles.InputForm}
+        onChange={(e) => onChange(e, "nombre")}
+      />
+      <Input
         placeholder="Correo Electronico"
         onChange={(e) => onChange(e, "email")}
         containerStyle={styles.inputForm}
-        rightIcon={
-          <Icon
-            type="material-community"
-            name="at"
-            iconStyle={styles.iconRight}
-          />
-        }
       />
       <Input
         placeholder="Contraseña"
@@ -96,6 +138,19 @@ export default function RegisterForm(props) {
           />
         }
       />
+      <View style={styles.viewSwitch}>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+          style={{ transform: [{ scaleX: 0.6 }, { scaleY: 0.6 }] }}
+          ios_backgroundColor="gray"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
+        <Text style={styles.textSwitch}>
+          Como paseador / como dueño de mascotas
+        </Text>
+      </View>
       <Button
         title="Unirse"
         onPress={onSubmit}
@@ -103,6 +158,25 @@ export default function RegisterForm(props) {
         buttonStyle={styles.btnRegister}
       />
       <Loading isVisible={loading} text="Creando cuenta" />
+      <ModalContainer isVisibleModal={isVisibleModal}>
+        <Text>
+          Te hemos enviado un link a tu correo para validar tu cuenta, una vez
+          validada puedes iniciar sesion. Si no te ha llegado el correo puedes
+          volver a enviar el link.
+        </Text>
+        <Button
+          title="Reenviar correo"
+          onPress={sendEmail}
+          containerStyle={styles.btnContainerRegister}
+          buttonStyle={styles.btnRegister}
+        ></Button>
+        <Button
+          title="Aceptar"
+          containerStyle={styles.btnContainerRegister}
+          onPress={login}
+          buttonStyle={styles.btnRegister}
+        ></Button>
+      </ModalContainer>
     </View>
   );
 }
@@ -134,5 +208,12 @@ const styles = StyleSheet.create({
   },
   iconRight: {
     color: "#c1c1c1",
+  },
+  viewSwitch: {
+    marginTop: 20,
+    flexDirection: "row",
+  },
+  textSwitch: {
+    marginTop: 5,
   },
 });

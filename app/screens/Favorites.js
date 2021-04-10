@@ -136,7 +136,6 @@ function Restaurant({
             });
         });
       });
-    console.log("remove");
   };
   return (
     <View style={styles.restaurant}>

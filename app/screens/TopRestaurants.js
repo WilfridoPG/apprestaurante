@@ -10,7 +10,7 @@ export default function TopRestaurants(props) {
   const { navigation } = props;
   const toastRef = useRef();
   const [restaurants, setrestaurants] = useState([]);
-  console.log(",mi srestuarnte*********", restaurants);
+
   useEffect(() => {
     db.collection("restaurants")
       .orderBy("rating", "desc")
@@ -19,7 +19,6 @@ export default function TopRestaurants(props) {
       .then((response) => {
         const restaurantArray = [];
         response.forEach((doc) => {
-          console.log(doc.data());
           const data = doc.data();
           data.id = doc.id;
           restaurantArray.push(data);

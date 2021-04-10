@@ -10,7 +10,6 @@ export default function ChangeDisplayNameForm(props) {
   const [error, setError] = useState(null);
 
   const onSubmit = () => {
-    console.log(newDisplayName);
     setError(null);
     if (!newDisplayName) {
       setError("El nombre no puede estar vacío.");
@@ -18,7 +17,7 @@ export default function ChangeDisplayNameForm(props) {
       setError("El nombre no puede ser igual al actual.");
     } else {
       setLoading(true);
-      console.log("nombre", newDisplayName);
+
       const update = {
         displayName: newDisplayName,
       };
@@ -26,7 +25,6 @@ export default function ChangeDisplayNameForm(props) {
         .auth()
         .currentUser.updateProfile(update)
         .then(() => {
-          console.log("ok");
           setLoading(false);
           setrealoadUserInfo(true);
           setshowModal(false);

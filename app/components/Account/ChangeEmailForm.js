@@ -12,7 +12,6 @@ export default function ChangeEmailForm(props) {
   const [error, setError] = useState({});
   const [loading, setLoading] = useState(false);
   const onChange = (e, type) => {
-    console.log("--->", type, e.nativeEvent.text);
     setFormData({ ...formData, [type]: e.nativeEvent.text });
   };
   const onSubmit = () => {
@@ -27,7 +26,6 @@ export default function ChangeEmailForm(props) {
       setLoading(true);
       reauthenticate(formData.password)
         .then((response) => {
-          console.log(response);
           firebase
             .auth()
             .currentUser.updateEmail(formData.email)
@@ -46,10 +44,7 @@ export default function ChangeEmailForm(props) {
           setError({ password: "La contraseña no es correcta." });
           setLoading(false);
         });
-      console.log("ok");
     }
-
-    console.log("formulario enviado");
   };
   return (
     <View style={styles.View}>
