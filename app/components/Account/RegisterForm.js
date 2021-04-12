@@ -46,7 +46,8 @@ export default function RegisterForm(props) {
         .createUserWithEmailAndPassword(formData.email, formData.password)
         .then((snashop) => {
           db.collection(`user`)
-            .add({ peseador: isEnabled, uid: snashop.user.uid })
+            .doc(snashop.user.uid)
+            .set({ peseador: isEnabled })
             .then(() => {
               sendEmail();
 

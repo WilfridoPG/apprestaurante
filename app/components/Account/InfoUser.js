@@ -8,6 +8,7 @@ import Toast from "react-native-easy-toast";
 export default function InfoUser(props) {
   const {
     userInfo: { photoURL, uid, displayName, email },
+    dataUser,
     toastRef,
     setloading,
     setloadingText,
@@ -74,7 +75,7 @@ export default function InfoUser(props) {
         }
       />
       <View>
-        <Text>Perfil Paseador</Text>
+        <Text>Perfil {dataUser?.paseador ? "Dueño" : "Paseador"} </Text>
         <Text style={styles.displayName}>
           {displayName ? displayName : "Anonimo"}
         </Text>

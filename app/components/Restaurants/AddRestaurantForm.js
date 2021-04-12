@@ -199,7 +199,8 @@ function Map(props) {
         );
       } else {
         const loc = await Location.getCurrentPositionAsync({});
-
+        const address = await Location.reverseGeocodeAsync(loc.coords);
+        console.log("----localizacion::", address);
         setLocation({
           latitude: loc.coords.latitude,
           longitude: loc.coords.longitude,
