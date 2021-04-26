@@ -8,7 +8,6 @@ export default function AddRestaurant(props) {
   const { navigation } = props;
   const [isLoading, setisLoading] = useState(false);
   const toastRef = useRef();
-
   return (
     <View>
       <AddRestaurantForm

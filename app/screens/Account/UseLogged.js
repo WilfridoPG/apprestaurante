@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { StyleSheet, View, Text, ScrollView } from "react-native";
-import { Button, Badge, Icon, ListItem } from "react-native-elements";
+import { Button, Avatar, Badge, Icon, ListItem } from "react-native-elements";
 import * as firebase from "firebase";
+import uuid from "random-uuid-v4";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
@@ -9,11 +10,13 @@ import Toast from "react-native-easy-toast";
 import AccountOptions from "../../components/Account/AccountOptions";
 import Loading from "../../components/Loading";
 import InfoUser from "../../components/Account/InfoUser";
-
+import Mapa from "../../components/Mapa";
+import { map, size, filter } from "lodash";
 import { firebaseApp } from "../../utils/firebase";
 import Modal from "../../components/Modal";
+import ModalContainer from "../../components/ModalContainer";
 import MapView from "react-native-maps";
-
+import Photos from "./Photos";
 const db = firebase.firestore(firebaseApp);
 
 export default function UseLogged() {
@@ -23,8 +26,10 @@ export default function UseLogged() {
   const [realoadUserInfo, setrealoadUserInfo] = useState(false);
   const [dataUser, setDataUser] = useState(null);
   const [isVisibleMap, setisVisibleMap] = useState(false);
-  const [locationRestaurant, setLocationRestaurant] = useState(null);
+  const [isVisibleModal, setisVisibleModal] = useState(false);
+  const [position, setposition] = useState([]);
   const [addres, setAddres] = useState([]);
+  const [imagesSelected, setImagesSelected] = useState([]);
   const toastRef = useRef();
 
   useEffect(() => {
@@ -35,9 +40,15 @@ export default function UseLogged() {
         .get()
         .then(function (doc) {
           if (doc.exists) {
-            console.log("Document data:", doc.data());
+            console.log("Document data:66666666666666", doc.data());
+            console.log(
+              "Document data:66666666666666222222",
+              doc.data().images
+            );
             let diaDisponible = doc.data().diaDisponible;
             setDataUser(doc.data());
+            setImagesSelected(doc.data().images);
+            setAddres(doc.data().addres);
           } else {
             console.log("No such document!");
           }
@@ -53,9 +64,9 @@ export default function UseLogged() {
 
   //guarda los dias activo
   const diaActivate = (day) => {
-    // console.log("---", day);
+    console.log("--************-", dataUser.diaDisponible);
     let nuevoDay = [];
-    console.log("::::", dataUser);
+    //  console.log("::::", dataUser);
     if (dataUser.diaDisponible.includes(day)) {
       nuevoDay = dataUser.diaDisponible.filter((d) => d !== day);
       setDataUser({ ...dataUser, diaDisponible: nuevoDay });
@@ -64,25 +75,91 @@ export default function UseLogged() {
         ...dataUser,
         diaDisponible: [...dataUser.diaDisponible, day],
       });
-      nuevoDay = [...dataUser.diaDisponible, day];
     }
-    console.log("refferencia11", userInfo.uid);
-    db.collection("user")
-      .doc(userInfo.uid)
-      .update({
-        diaDisponible: nuevoDay,
-      })
-      .then(() => {
-        console.log("Document successfully written!");
-      })
-      .catch((error) => {
-        console.error("Error writing document: ", error);
-      });
   };
   //remover ubicacion
   const removeUbicacion = (index) => {
     const arraUbicacion = addres.filter((ad, i) => i !== index);
     setAddres(arraUbicacion);
+  };
+  //open modal map
+  const openModalMap = (position) => {
+    setisVisibleModal(true);
+    setposition(position);
+  };
+  //guardar configuracino
+  const guardarConfig = () => {
+    console.log("DATOS SE ENVIIO", dataUser);
+
+    uploadImageStorage().then((response) => {
+      db.collection("user")
+        .doc(userInfo.uid)
+        .update({
+          addres: addres,
+          diaDisponible: dataUser.diaDisponible,
+          images: response,
+        })
+        .then(() => {
+          console.log("Document successfully written!");
+        })
+        .catch((error) => {
+          console.error("Error writing document: ", error);
+        });
+
+      /*  db.collection("restaurants")
+        .add({
+          name: restauranteName,
+          addrees: restaurantAddress,
+          description: restaurantDescription,
+          location: locationRestaurant,
+          images: response,
+          rating: 0,
+          ratingTotal: 0,
+          quantityVoting: 0,
+          createAt: new Date(),
+          createBy: firebase.auth().currentUser.uid,
+        })
+        .then(() => {
+          setisLoading(false);
+          navigation.navigate("restaurants");
+        })
+        .catch(() => {
+          setisLoading(false);
+          toastRef.current.show(
+            "Error al subir el restaurante, intentelo más tarde"
+          );
+        });*/
+    });
+  };
+  //
+  const uploadImageStorage = async () => {
+    // Delete the file
+
+    const imageBlob = [];
+    await Promise.all(
+      map(imagesSelected, async (image) => {
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const ref = firebase
+          .storage()
+          .ref(`user/${userInfo.uid}`)
+          .child(uuid());
+        await ref.put(blob).then(async (result) => {
+          await firebase
+            .storage()
+            .ref(`user/${userInfo.uid}/${result.metadata.name}`)
+            .getDownloadURL()
+            .then((photoUrl) => {
+              //console.log("url", photoUrl);
+              imageBlob.push(photoUrl);
+            });
+          //console.log("result", result);
+        });
+        //console.log(JSON.stringify(response));
+      })
+    );
+
+    return imageBlob;
   };
 
   return (
@@ -128,7 +205,11 @@ export default function UseLogged() {
           <Button
             title="Agregar sitio"
             type="outline"
-            onPress={() => setisVisibleMap(true)}
+            onPress={() =>
+              addres.length == 5
+                ? toastRef.current.show("No se puede agregar mas de 5 lugares")
+                : setisVisibleMap(true)
+            }
             buttonStyle={{
               borderColor: "rgb(137,144,246)",
               marginTop: 10,
@@ -144,25 +225,50 @@ export default function UseLogged() {
               />
             }
           />
-          {addres.map((ubicacion, index) => (
-            <ListItem
-              key={index}
-              title={`${ubicacion[0].city}, ${ubicacion[0].district}, CP: ${ubicacion[0].postalCode} `}
-              leftIcon={{
-                type: "material-community",
-                name: "map-marker-radius",
-                color: "gray",
-              }}
-              rightIcon={{
-                type: "material-community",
-                name: "close-circle-outline",
-                color: "gray",
-                onPress: () => removeUbicacion(index),
-              }}
-              containerStyle={{ width: "100%" }}
-            />
-          ))}
+          {addres
+            ? addres.map((data, index) => {
+                console.log("-->çççççççççççç", data.position);
+                return (
+                  <ListItem
+                    key={index}
+                    title={`${data.ubicacion.city}, ${data.ubicacion.district}, calle:${data.ubicacion.street}, cp:${data.ubicacion.postalCode}`}
+                    leftIcon={{
+                      type: "material-community",
+                      name: "map-marker-radius",
+                      color: "gray",
+                    }}
+                    rightIcon={{
+                      type: "material-community",
+                      name: "close-circle-outline",
+                      color: "gray",
+                      onPress: () => removeUbicacion(index),
+                    }}
+                    containerStyle={{ width: "100%" }}
+                    onPress={() => openModalMap(data.position)}
+                  />
+                );
+              })
+            : null}
         </View>
+        <View style={{ marginLeft: 20, marginTop: 20 }}>
+          <Text>Fotos </Text>
+          <UpladImage
+            toastRef={toastRef}
+            imagesSelected={imagesSelected}
+            setImagesSelected={setImagesSelected}
+          />
+          <Photos
+            imagesSelected={imagesSelected}
+            setImagesSelected={setImagesSelected}
+          />
+        </View>
+
+        <Button
+          title="Guardar configuración"
+          buttonStyle={styles.btnCloseSesion}
+          titleStyle={styles.btnCloseSesionText}
+          onPress={() => guardarConfig()}
+        />
 
         <Button
           title="Cerrar Sesión"
@@ -174,12 +280,28 @@ export default function UseLogged() {
         <Loading isVisible={loading} text={loadingText} />
         <Map
           isVisibleMap={isVisibleMap}
+          userInfo={userInfo}
           setisVisibleMap={setisVisibleMap}
           setAddres={setAddres}
           addres={addres}
-          setLocationRestaurant={setLocationRestaurant}
           toastRef={toastRef}
         />
+        <ModalContainer isVisibleModal={isVisibleModal}>
+          <Text>Ubicación del lugar:</Text>
+          <Mapa height={200} location={position} name="data" />
+
+          <Button
+            title="Cerrar"
+            type="outline"
+            onPress={() => setisVisibleModal(false)}
+            buttonStyle={{
+              borderColor: "rgb(137,144,246)",
+              marginTop: 10,
+              marginBottom: 10,
+            }}
+            titleStyle={{ color: "rgb(137,144,246)" }}
+          />
+        </ModalContainer>
       </View>
     </ScrollView>
   );
@@ -190,8 +312,8 @@ function Map(props) {
     setAddres,
     setisVisibleMap,
     addres,
-    setLocationRestaurant,
     toastRef,
+    userInfo,
   } = props;
   const [location, setLocation] = useState(null);
 
@@ -222,10 +344,16 @@ function Map(props) {
 
   const confirmarLocation = async () => {
     const address = await Location.reverseGeocodeAsync(location);
-    setAddres([...addres, address]);
-    //console.log("----localizacion::", address);
-    setLocationRestaurant(location);
-    toastRef.current.show("Localizacion guardada correctamente");
+    console.log("----localizacion::", addres);
+
+    if (address) {
+      setAddres([...addres, { position: location, ubicacion: address[0] }]);
+
+      toastRef.current.show("Localizacion guardada correctamente");
+    } else {
+      toastRef.current.show("No se puede guardar mas de 5 lugares");
+    }
+
     setisVisibleMap(false);
   };
   return (
@@ -265,6 +393,83 @@ function Map(props) {
         </View>
       </View>
     </Modal>
+  );
+}
+
+function UpladImage({ toastRef, setImagesSelected, imagesSelected }) {
+  const imageSelect = async () => {
+    const resultPermissions = await Permissions.askAsync(
+      Permissions.CAMERA_ROLL
+    );
+
+    if (resultPermissions == "denied") {
+      toastRef.current.show(
+        "Es necesario activar los permisos para acceder a la galería",
+        3000
+      );
+    } else {
+      //lanzamos la galeria
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+      });
+
+      if (result.cancelled) {
+        toastRef.current.show(
+          "Has cerrado la galeria sin seleccionar ninguna imagen",
+          2000
+        );
+      } else {
+        //agregamos varios imagenes
+        setImagesSelected([...imagesSelected, result.uri]);
+      }
+    }
+  };
+  const removeImage = (image) => {
+    Alert.alert(
+      "Eliminar imagen",
+      "Estas seguro de eliminar la imagen",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Eliminar",
+          onPress: () => {
+            setImagesSelected(
+              filter(imagesSelected, (imageUrl) => imageUrl !== image)
+            );
+          },
+        },
+      ],
+      {
+        cancelable: false,
+      }
+    );
+  };
+
+  return (
+    <View style={styles.viewImage}>
+      {size(imagesSelected) < 4 && (
+        <Icon
+          type="material-community"
+          name="camera"
+          color="#7a7a7a"
+          containerStyle={styles.containerIcon}
+          onPress={imageSelect}
+        />
+      )}
+
+      {map(imagesSelected, (imagesRestarante, index) => (
+        <Avatar
+          key={index}
+          style={styles.miniatureStyles}
+          source={{ uri: imagesRestarante }}
+          onPress={() => removeImage(imagesRestarante)}
+        />
+      ))}
+    </View>
   );
 }
 

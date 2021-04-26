@@ -5,7 +5,8 @@ import { map } from "lodash";
 import Modal from "../../components/Modal";
 import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
 import ChangeEmailForm from "./ChangeEmailForm";
-import ChangePasswordForm from "./ChangePasswordForm";
+import ChangePasswordForm from "./ChangeNumberForm";
+import ChangeNumberForm from "./ChangeNumberForm";
 export default function AccountOptions(props) {
   const [showModal, setshowModal] = useState(true);
   const [rederComponent, setrederComponent] = useState(null);
@@ -37,6 +38,12 @@ export default function AccountOptions(props) {
       case "password":
         setrederComponent(
           <ChangePasswordForm setshowModal={setshowModal} toastRef={toastRef} />
+        );
+        setshowModal(true);
+        break;
+      case "numero":
+        setrederComponent(
+          <ChangeNumberForm setshowModal={setshowModal} toastRef={toastRef} />
         );
         setshowModal(true);
         break;
@@ -87,7 +94,8 @@ function generateOptions(selectComponent) {
       iconColorRight: "#ccc",
       onPress: () => selectComponent("displayName"),
     },
-    /*{
+    /*
+    {
       title: "Cambiar Email",
       iconType: "material-community",
       iconNameLeft: "at",
@@ -104,6 +112,15 @@ function generateOptions(selectComponent) {
       iconNameRight: "chevron-right",
       iconColorRight: "#ccc",
       onPress: () => selectComponent("password"),
+    },
+    {
+      title: "Cambiar número",
+      iconType: "material-community",
+      iconNameLeft: "lock-reset",
+      iconColorLeft: "#ccc",
+      iconNameRight: "chevron-right",
+      iconColorRight: "#ccc",
+      onPress: () => selectComponent("numero"),
     },
   ];
 }
