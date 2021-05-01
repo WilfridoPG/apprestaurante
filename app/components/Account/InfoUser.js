@@ -75,7 +75,7 @@ export default function InfoUser(props) {
         }
       />
       <View>
-        <Text>Perfil {dataUser?.paseador ? "Dueño" : "Paseador"} </Text>
+        <Text>Perfil {dataUser?.paseador ? "Paseador" : "Dueño"}</Text>
         <Text style={styles.displayName}>
           {displayName ? displayName : "Anonimo"}
         </Text>

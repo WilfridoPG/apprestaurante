@@ -92,6 +92,8 @@ const styles = StyleSheet.create({
   },
   viewRestaurant: {
     flexDirection: "row",
+    backgroundColor: "rgb(204, 228, 250)",
+    borderRadius: 10,
     margin: 10,
   },
   viewRestaurantImage: {

@@ -72,20 +72,10 @@ export default function ListReviews({ navigation, idRestaurant, setRating }) {
 function Review(props) {
   const { avatarUser, title, review, rating, createAt } = props.review;
   const createReview = new Date(createAt.seconds * 1000);
+
   return (
     <View style={styles.viewReview}>
-      <View style={styles.viewImageAvatar}>
-        <Avatar
-          size="large"
-          rounded
-          containerStyle={styles.imageAvatarUser}
-          source={
-            avatarUser
-              ? { uri: avatarUser }
-              : require("../../../assets/img//avatar-default.jpg")
-          }
-        />
-      </View>
+      <View style={styles.viewImageAvatar}></View>
       <View style={styles.viewInfo}>
         <Text style={styles.reviewTitle}>{title}</Text>
         <Text style={styles.reviewText}>{review}</Text>

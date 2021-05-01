@@ -34,21 +34,17 @@ export default function AddRestaurantForm(props) {
   const [locationRestaurant, setLocationRestaurant] = useState(null);
 
   const addRestaurant = () => {
-    if (!restauranteName || !restaurantAddress || !restaurantDescription) {
+    if (!restauranteName || !restaurantDescription) {
       toastRef.current.show("Todos los campos del formulario son obligatorios");
     } else if (size(imagesSelected) === 0) {
       toastRef.current.show("El restaurante tiene que tener almenos una foto");
-    } else if (!locationRestaurant) {
-      toastRef.current.show("Tienes que localizar el restaurante en el mapa");
     } else {
       setisLoading(true);
       uploadImageStorage().then((response) => {
-        db.collection("restaurants")
+        db.collection("mascotas")
           .add({
             name: restauranteName,
-            addrees: restaurantAddress,
             description: restaurantDescription,
-            location: locationRestaurant,
             images: response,
             rating: 0,
             ratingTotal: 0,
@@ -58,7 +54,7 @@ export default function AddRestaurantForm(props) {
           })
           .then(() => {
             setisLoading(false);
-            navigation.navigate("restaurants");
+            navigation.navigate("serach");
           })
           .catch(() => {
             setisLoading(false);
@@ -111,7 +107,7 @@ export default function AddRestaurantForm(props) {
         setImagesSelected={setImagesSelected}
       />
       <Button
-        title="Crear Restaurante"
+        title="Agregar Mascota"
         onPress={addRestaurant}
         buttonStyle={styles.btnAddRestaurant}
       />
@@ -155,7 +151,7 @@ function FormAdd(props) {
         containerStyle={styles.input}
         onChange={(e) => setrestauranteName(e.nativeEvent.text)}
       />
-      <Input
+      {/*<Input
         placeholder="Direccion"
         containerStyle={styles.input}
         onChange={(e) => setrestaurantAddress(e.nativeEvent.text)}
@@ -165,7 +161,8 @@ function FormAdd(props) {
           color: locationRestaurant ? "#00a680" : "#c2c2c2",
           onPress: () => setisVisibleMap(true),
         }}
-      />
+      /> */}
+
       <Input
         placeholder="Descripcion del restaurante"
         containerStyle={styles.input}

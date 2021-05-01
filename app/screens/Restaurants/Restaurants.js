@@ -79,16 +79,6 @@ export default function Restaurants(props) {
         handleLoadMore={handleLoadMore}
         loading={loading}
       />
-      {user && (
-        <Icon
-          reverse
-          type="material-community"
-          name="plus"
-          color="rgb(65,75,188)"
-          containerStyle={styles.btnContainer}
-          onPress={() => navigation.navigate("add-restaurant")}
-        />
-      )}
     </View>
   );
 }
@@ -97,12 +87,5 @@ const styles = StyleSheet.create({
   viewBody: {
     flex: 1,
     backgroundColor: "#fff",
-  },
-  btnContainer: {
-    position: "absolute",
-    bottom: 10,
-    right: 10,
-    shadowColor: "black",
-    shadowOffset: { width: 2, height: 2 },
   },
 });

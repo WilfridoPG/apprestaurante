@@ -2,10 +2,10 @@ import React, { useRef, useState, useEffect } from "react";
 import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { Button, Avatar, Badge, Icon, ListItem } from "react-native-elements";
 import * as firebase from "firebase";
-import uuid from "random-uuid-v4";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
+import uuid from "random-uuid-v4";
 import Toast from "react-native-easy-toast";
 import AccountOptions from "../../components/Account/AccountOptions";
 import Loading from "../../components/Loading";
@@ -41,14 +41,18 @@ export default function UseLogged() {
         .then(function (doc) {
           if (doc.exists) {
             console.log("Document data:66666666666666", doc.data());
-            console.log(
-              "Document data:66666666666666222222",
-              doc.data().images
-            );
-            let diaDisponible = doc.data().diaDisponible;
             setDataUser(doc.data());
-            setImagesSelected(doc.data().images);
-            setAddres(doc.data().addres);
+            if (doc.data().images == undefined) {
+              setImagesSelected([]);
+            } else {
+              setImagesSelected(doc.data().images);
+            }
+
+            if (doc.data().addres === undefined) {
+              setAddres([]);
+            } else {
+              setAddres(doc.data().addres);
+            }
           } else {
             console.log("No such document!");
           }
@@ -68,8 +72,10 @@ export default function UseLogged() {
     let nuevoDay = [];
     //  console.log("::::", dataUser);
     if (dataUser.diaDisponible.includes(day)) {
-      nuevoDay = dataUser.diaDisponible.filter((d) => d !== day);
-      setDataUser({ ...dataUser, diaDisponible: nuevoDay });
+      if (dataUser.diaDisponible.length > 1) {
+        nuevoDay = dataUser.diaDisponible.filter((d) => d !== day);
+        setDataUser({ ...dataUser, diaDisponible: nuevoDay });
+      }
     } else {
       setDataUser({
         ...dataUser,
@@ -105,30 +111,6 @@ export default function UseLogged() {
         .catch((error) => {
           console.error("Error writing document: ", error);
         });
-
-      /*  db.collection("restaurants")
-        .add({
-          name: restauranteName,
-          addrees: restaurantAddress,
-          description: restaurantDescription,
-          location: locationRestaurant,
-          images: response,
-          rating: 0,
-          ratingTotal: 0,
-          quantityVoting: 0,
-          createAt: new Date(),
-          createBy: firebase.auth().currentUser.uid,
-        })
-        .then(() => {
-          setisLoading(false);
-          navigation.navigate("restaurants");
-        })
-        .catch(() => {
-          setisLoading(false);
-          toastRef.current.show(
-            "Error al subir el restaurante, intentelo más tarde"
-          );
-        });*/
     });
   };
   //
@@ -155,7 +137,6 @@ export default function UseLogged() {
             });
           //console.log("result", result);
         });
-        //console.log(JSON.stringify(response));
       })
     );
 
@@ -177,6 +158,7 @@ export default function UseLogged() {
 
         <AccountOptions
           userInfo={userInfo}
+          dataUser={dataUser}
           toastRef={toastRef}
           setrealoadUserInfo={setrealoadUserInfo}
         />

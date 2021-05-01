@@ -47,7 +47,10 @@ export default function RegisterForm(props) {
         .then((snashop) => {
           db.collection(`user`)
             .doc(snashop.user.uid)
-            .set({ peseador: isEnabled })
+            .set({
+              peseador: isEnabled,
+              diaDisponible: ["Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"],
+            })
             .then(() => {
               sendEmail();
 

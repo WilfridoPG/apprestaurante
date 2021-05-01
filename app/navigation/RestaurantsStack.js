@@ -24,7 +24,9 @@ export default function RestaurantsStack() {
         component={AddRestaurant}
         options={{ title: "Añadir nuevo restaurante" }}
       ></Stack.Screen>
+
       <Stack.Screen name="restaurant" component={Restaurant}></Stack.Screen>
+
       <Stack.Screen
         name="add-review-restaurant"
         component={AddReviewRestaurant}

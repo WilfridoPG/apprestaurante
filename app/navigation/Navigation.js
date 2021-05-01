@@ -26,7 +26,7 @@ export default function Navigation() {
         <Tab.Screen
           name="restaurants"
           component={RestaurantsStack}
-          options={{ title: "Restaurantes" }}
+          options={{ title: "Paseadores" }}
         />
         <Tab.Screen
           name="favorites"
@@ -41,7 +41,7 @@ export default function Navigation() {
         <Tab.Screen
           name="search"
           component={SearchStack}
-          options={{ title: "Buscar" }}
+          options={{ title: "Mascotas" }}
         />
         <Tab.Screen
           name="account"
@@ -57,7 +57,7 @@ function screenOptions(route, color) {
   let iconName;
   switch (route.name) {
     case "restaurants":
-      iconName = "home";
+      iconName = "run";
       break;
     case "favorites":
       iconName = "heart";
@@ -66,7 +66,7 @@ function screenOptions(route, color) {
       iconName = "star";
       break;
     case "search":
-      iconName = "magnify";
+      iconName = "paw";
       break;
     case "account":
       iconName = "account";

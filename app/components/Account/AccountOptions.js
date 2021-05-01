@@ -5,7 +5,7 @@ import { map } from "lodash";
 import Modal from "../../components/Modal";
 import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
 import ChangeEmailForm from "./ChangeEmailForm";
-import ChangePasswordForm from "./ChangeNumberForm";
+import ChangePasswordForm from "./ChangePasswordForm";
 import ChangeNumberForm from "./ChangeNumberForm";
 export default function AccountOptions(props) {
   const [showModal, setshowModal] = useState(true);
@@ -116,7 +116,7 @@ function generateOptions(selectComponent) {
     {
       title: "Cambiar número",
       iconType: "material-community",
-      iconNameLeft: "lock-reset",
+      iconNameLeft: "whatsapp",
       iconColorLeft: "#ccc",
       iconNameRight: "chevron-right",
       iconColorRight: "#ccc",
