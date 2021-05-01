@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { size } from "lodash";
-import { Image } from "react-native-elements";
+import { Image, Icon, Button } from "react-native-elements";
 import { firebaseApp } from "../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
@@ -23,65 +23,43 @@ export default function Search(props) {
   const [mascotas, setMascotas] = useState([]);
   const [totalMascotas, setTotalMascotas] = useState(0);
   const [startMascotas, setStartMascotas] = useState(null);
+  const [userLogged, setUserLogged] = useState(false);
   const [loading, setLoading] = useState(false);
-  const limitMascotas = 10;
 
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged((userInfo) => {
-      setUser(userInfo);
-    });
-  }, []);
+  firebase.auth().onAuthStateChanged((user) => {
+    user ? setUserLogged(true) : setUserLogged(false);
+  });
 
   useFocusEffect(
     useCallback(() => {
-      db.collection("mascotas")
-        .get()
-        .then((snap) => {
-          setTotalMascotas(snap.size);
-        });
-      const resultRestaurant = [];
-      db.collection("mascotas")
-        .orderBy("createAt", "desc")
-        .limit(limitMascotas)
-        .get()
-        .then((response) => {
-          setStartMascotas(response.docs[response.docs.length - 1]);
-          response.forEach((doc) => {
-            const restaurant = doc.data();
-            restaurant.id = doc.id;
-            resultRestaurant.push(restaurant);
+      if (userLogged) {
+        db.collection("mascotas")
+          .get()
+          .then((snap) => {
+            setTotalMascotas(snap.size);
           });
-          setMascotas(resultRestaurant);
-        });
-    }, [])
+        const resultRestaurant = [];
+        db.collection("mascotas")
+          .where("createBy", "==", firebase.auth().currentUser.uid)
+          .get()
+          .then((response) => {
+            setStartMascotas(response.docs[response.docs.length - 1]);
+            response.forEach((doc) => {
+              const restaurant = doc.data();
+              restaurant.id = doc.id;
+              resultRestaurant.push(restaurant);
+            });
+            setMascotas(resultRestaurant);
+          });
+      }
+    }, [userLogged])
   );
 
-  const handleLoadMore = () => {
-    const resultRestaurant = [];
-    mascotas.length < totalMascotas && setLoading(true);
-    db.collection("mascotas")
-      .orderBy("createAt", "desc")
-      .startAfter(startMascotas.data().createAt)
-      .limit(limitMascotas)
-      .get()
-      .then((response) => {
-        if (response.docs.length > 0) {
-          setStartMascotas(response.docs[response.docs.length - 1]);
-        } else {
-          setLoading(false);
-        }
-
-        response.forEach((doc) => {
-          const restaurant = doc.data();
-          restaurant.id = doc.id;
-          resultRestaurant.push(restaurant);
-        });
-        setMascotas([...mascotas, ...resultRestaurant]);
-      });
-  };
-
+  if (!userLogged) {
+    return <UserNoLogged navigation={navigation}></UserNoLogged>;
+  }
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       {size(mascotas) > 0 ? (
         <FlatList
           data={mascotas}
@@ -89,19 +67,46 @@ export default function Search(props) {
             <Mascotas restaurant={restaurant} navigation={navigation} />
           )}
           keyExtractor={(item, index) => index.toString()}
-          onEndReachedThreshold={0.5}
-          onEndReached={handleLoadMore}
-          ListFooterComponent={<FooterList loading={loading} />}
         />
       ) : (
         <View style={styles.loaderMascotas}>
-          <ActivityIndicator size="large" color="#00a680" />
-          <Text>Cargando mascotas</Text>
+          {/* <ActivityIndicator size="large" color="#00a680" />*/}
+
+          <Text>No hay mascotas registrado</Text>
         </View>
+      )}
+
+      {userLogged && (
+        <Icon
+          reverse
+          type="material-community"
+          name="plus"
+          color="rgb(65,75,188)"
+          containerStyle={styles.btnContainer}
+          onPress={() => navigation.navigate("add-restaurant")}
+        />
       )}
     </View>
   );
 }
+function UserNoLogged(props) {
+  const { navigation } = props;
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Icon type="material-community" name="alert-outline" size={50}></Icon>
+      <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}>
+        Necesitas estar logeado para ver esta sección
+      </Text>
+      <Button
+        title="Ir al login"
+        type="outline"
+        containerStyle={{ marginTop: 20, width: "80%" }}
+        onPress={() => navigation.navigate("account", { screen: "login" })}
+      ></Button>
+    </View>
+  );
+}
+
 function Mascotas(props) {
   const { restaurant, navigation } = props;
   const { id, images, name, description, addrees } = restaurant.item;
@@ -154,6 +159,7 @@ function FooterList(props) {
 const styles = StyleSheet.create({
   loaderMascotas: {
     marginTop: 10,
+    alignItems: "center",
     marginBottom: 10,
   },
   viewRestaurant: {
@@ -186,5 +192,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
     alignItems: "center",
+  },
+  btnContainer: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    shadowColor: "black",
+    shadowOffset: { width: 2, height: 2 },
   },
 });

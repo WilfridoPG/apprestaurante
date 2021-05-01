@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
 import * as firebase from "firebase";
+import { firebaseApp } from "../../utils/firebase";
+import "firebase/firestore";
+const db = firebase.firestore(firebaseApp);
 
 export default function ChangeDisplayNameForm(props) {
   const { displayName, setshowModal, toastRef, setrealoadUserInfo } = props;
   const [newDisplayName, setnewDisplayName] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
   const onSubmit = () => {
     setError(null);
     if (!newDisplayName) {
@@ -17,7 +19,6 @@ export default function ChangeDisplayNameForm(props) {
       setError("El nombre no puede ser igual al actual.");
     } else {
       setLoading(true);
-
       const update = {
         displayName: newDisplayName,
       };
@@ -25,9 +26,20 @@ export default function ChangeDisplayNameForm(props) {
         .auth()
         .currentUser.updateProfile(update)
         .then(() => {
-          setLoading(false);
-          setrealoadUserInfo(true);
-          setshowModal(false);
+          db.collection(`user`)
+            .doc(firebase.auth().currentUser.uid)
+            .update({
+              name: newDisplayName,
+            })
+            .then(() => {
+              setLoading(false);
+              setrealoadUserInfo(true);
+              setshowModal(false);
+            })
+            .catch(() => {
+              setError("Error al actualizar el nombre.");
+              setLoading(false);
+            });
         })
         .catch(() => {
           setError("Error al actualizar el nombre.");

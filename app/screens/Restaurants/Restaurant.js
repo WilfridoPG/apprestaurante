@@ -76,7 +76,7 @@ export default function Restaurant(props) {
 
   useFocusEffect(
     useCallback(() => {
-      db.collection("restaurants")
+      db.collection("user")
         .doc(id)
         .get()
         .then((response) => {
@@ -127,10 +127,11 @@ export default function Restaurant(props) {
         rating={restaurant.rating}
       />
       <RestaurantInfo
-        location={restaurant.location}
+        location={restaurant.addres}
         name={restaurant.name}
         addres={restaurant.addrees}
       />
+
       <ListReviews
         navigation={navigation}
         idRestaurant={restaurant.id}
@@ -159,30 +160,16 @@ function TitleRestaurant({ name, description, rating }) {
 function RestaurantInfo({ location, name, addres }) {
   const listInfo = [
     {
-      text: addres,
-      iconName: "map-marker",
-      iconType: "material-community",
-      action: "null",
-    },
-    {
-      text: "236123782",
+      text: "Contactar al paseador",
       iconName: "phone",
-      iconType: "material-community",
-      action: "null",
-    },
-    {
-      text: "wilfrido@wilfrido.com",
-      iconName: "at",
       iconType: "material-community",
       action: "null",
     },
   ];
   return (
     <View style={styles.viewRestaurantInfo}>
-      <Text style={styles.restauranteInfoTitle}>
-        Información sobre el restaurante
-      </Text>
-      <Mapa location={location} name={name} height={100} />
+      <Text style={styles.restauranteInfoTitle}>Sitios que trabajo</Text>
+      <Mapa location={location} name={name} height={200} />
       {map(listInfo, (item, index) => (
         <ListItem
           key={index}

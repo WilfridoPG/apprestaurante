@@ -35,7 +35,7 @@ export default function ListReviews({ navigation, idRestaurant, setRating }) {
     <View>
       {userLogged ? (
         <Button
-          title="Escribe una opinion"
+          title="Califica y deja un comentario"
           buttonStyle={styles.btnAddReview}
           titleStyle={styles.titleReview}
           icon={{

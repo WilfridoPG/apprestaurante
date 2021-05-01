@@ -10,13 +10,12 @@ import { useFocusEffect } from "@react-navigation/native";
 const db = firebase.firestore(firebaseApp);
 firebase.firestore().settings({ experimentalForceLongPolling: true });
 export default function Restaurants(props) {
-  const [user, setUser] = useState(null);
   const { navigation } = props;
-  const [restaurants, setRestaurants] = useState([]);
-  const [totalRestaurants, setTotalRestaurants] = useState(0);
-  const [startRestaurants, setStartRestaurants] = useState(null);
+  const [user, setUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [startUsers, setStartUsers] = useState(null);
   const [loading, setLoading] = useState(false);
-  const limitRestaurants = 10;
+  const limitUsers = 10;
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
@@ -26,56 +25,56 @@ export default function Restaurants(props) {
 
   useFocusEffect(
     useCallback(() => {
-      db.collection("restaurants")
+      db.collection("user")
         .get()
         .then((snap) => {
-          setTotalRestaurants(snap.size);
+          setTotalUsers(snap.size);
         });
       const resultRestaurant = [];
-      db.collection("restaurants")
+      db.collection("user")
         .orderBy("createAt", "desc")
-        .limit(limitRestaurants)
+        .limit(limitUsers)
         .get()
         .then((response) => {
-          setStartRestaurants(response.docs[response.docs.length - 1]);
+          setStartUsers(response.docs[response.docs.length - 1]);
           response.forEach((doc) => {
-            const restaurant = doc.data();
-            restaurant.id = doc.id;
-            resultRestaurant.push(restaurant);
+            const user = doc.data();
+            user.id = doc.id;
+            resultRestaurant.push(user);
           });
-          setRestaurants(resultRestaurant);
+          setUsers(resultRestaurant);
         });
     }, [])
   );
 
   const handleLoadMore = () => {
     const resultRestaurant = [];
-    restaurants.length < totalRestaurants && setLoading(true);
-    db.collection("restaurants")
+    user.length < totalUsers && setLoading(true);
+    db.collection("user")
       .orderBy("createAt", "desc")
-      .startAfter(startRestaurants.data().createAt)
-      .limit(limitRestaurants)
+      .startAfter(startUsers.data().createAt)
+      .limit(limitUsers)
       .get()
       .then((response) => {
         if (response.docs.length > 0) {
-          setStartRestaurants(response.docs[response.docs.length - 1]);
+          setStartUsers(response.docs[response.docs.length - 1]);
         } else {
           setLoading(false);
         }
 
         response.forEach((doc) => {
-          const restaurant = doc.data();
-          restaurant.id = doc.id;
-          resultRestaurant.push(restaurant);
+          const user = doc.data();
+          user.id = doc.id;
+          resultRestaurant.push(user);
         });
-        setRestaurants([...restaurants, ...resultRestaurant]);
+        setUsers([...user, ...resultRestaurant]);
       });
   };
 
   return (
     <View style={styles.viewBody}>
       <ListRestaurants
-        restaurants={restaurants}
+        user={user}
         handleLoadMore={handleLoadMore}
         loading={loading}
       />

@@ -11,14 +11,14 @@ import { size } from "lodash";
 import { Image } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 export default function ListRestaurants(props) {
-  const { restaurants, handleLoadMore, loading } = props;
+  const { user, handleLoadMore, loading } = props;
   const navigation = useNavigation();
 
   return (
     <View>
-      {size(restaurants) > 0 ? (
+      {size(user) > 0 ? (
         <FlatList
-          data={restaurants}
+          data={user}
           renderItem={(restaurant) => (
             <Restaurants restaurant={restaurant} navigation={navigation} />
           )}
@@ -30,7 +30,7 @@ export default function ListRestaurants(props) {
       ) : (
         <View style={styles.loaderRestaurants}>
           <ActivityIndicator size="large" color="#00a680" />
-          <Text>Cargando restaurants</Text>
+          <Text>Cargando user</Text>
         </View>
       )}
     </View>

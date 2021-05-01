@@ -193,8 +193,8 @@ function UserNoLogged(props) {
       </Text>
       <Button
         title="Ir al login"
+        type="outline"
         containerStyle={{ marginTop: 20, width: "80%" }}
-        buttonStyle={{ backgroundColor: "rgb(137,144,246)" }}
         onPress={() => navigation.navigate("account", { screen: "login" })}
       ></Button>
     </View>

@@ -7,12 +7,24 @@ import ChangeDisplayNameForm from "./ChangeDisplayNameForm";
 import ChangeEmailForm from "./ChangeEmailForm";
 import ChangePasswordForm from "./ChangePasswordForm";
 import ChangeNumberForm from "./ChangeNumberForm";
+import ChangeDescriptionForm from "./ChangeDescriptionForm";
 export default function AccountOptions(props) {
   const [showModal, setshowModal] = useState(true);
   const [rederComponent, setrederComponent] = useState(null);
-  const { userInfo, toastRef, setrealoadUserInfo } = props;
+  const { userInfo, toastRef, setrealoadUserInfo, dataUser } = props;
   const selectComponent = (key) => {
     switch (key) {
+      case "description":
+        setrederComponent(
+          <ChangeDescriptionForm
+            description={dataUser.description}
+            setrealoadUserInfo={setrealoadUserInfo}
+            setshowModal={setshowModal}
+            toastRef={toastRef}
+          ></ChangeDescriptionForm>
+        );
+        setshowModal(true);
+        break;
       case "displayName":
         setrederComponent(
           <ChangeDisplayNameForm
@@ -43,7 +55,11 @@ export default function AccountOptions(props) {
         break;
       case "numero":
         setrederComponent(
-          <ChangeNumberForm setshowModal={setshowModal} toastRef={toastRef} />
+          <ChangeNumberForm
+            numero={dataUser.numero}
+            setshowModal={setshowModal}
+            toastRef={toastRef}
+          />
         );
         setshowModal(true);
         break;
@@ -85,6 +101,15 @@ export default function AccountOptions(props) {
 }
 function generateOptions(selectComponent) {
   return [
+    {
+      title: "Cambiar Description",
+      iconType: "material-community",
+      iconNameLeft: "account-circle",
+      iconColorLeft: "#ccc",
+      iconNameRight: "chevron-right",
+      iconColorRight: "#ccc",
+      onPress: () => selectComponent("description"),
+    },
     {
       title: "Cambiar Nombre y Apellido",
       iconType: "material-community",

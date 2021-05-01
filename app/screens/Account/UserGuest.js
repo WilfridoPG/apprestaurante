@@ -8,7 +8,7 @@ export default function UserGuest() {
   return (
     <ScrollView centerContent={true} style={styles.viewBody}>
       <Image
-        source={require("../../../assets/img/user-guest.jpg")}
+        source={require("../../../assets/img/4011688.jpg")}
         style={styles.image}
       />
       <Text style={styles.title}>PaseaPet</Text>
@@ -18,7 +18,7 @@ export default function UserGuest() {
       </Text>
       <View style={styles.viewbtn}>
         <Button
-          buttonStyle={styles.btnstyle}
+          type="outline"
           containerStyle={styles.btnContainer}
           title="Ver tu Perfil"
           onPress={() => navigation.navigate("login")}
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     marginRight: 30,
   },
   image: {
+    marginTop: 20,
     height: 300,
     width: "100%",
     marginBottom: 40,

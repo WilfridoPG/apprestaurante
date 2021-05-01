@@ -7,7 +7,6 @@ import * as firebase from "firebase";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
 import ModalContainer from "../ModalContainer";
-
 import { firebaseApp } from "../../utils/firebase";
 import "firebase/firestore";
 const db = firebase.firestore(firebaseApp);
@@ -20,9 +19,7 @@ export default function RegisterForm(props) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-
   const navigation = useNavigation();
-
   const onSubmit = async () => {
     if (
       isEmpty(formData.nombre) ||
@@ -48,8 +45,13 @@ export default function RegisterForm(props) {
           db.collection(`user`)
             .doc(snashop.user.uid)
             .set({
+              name: formData.nombre,
               peseador: isEnabled,
               diaDisponible: ["Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"],
+              rating: 0,
+              ratingTotal: 0,
+              quantityVoting: 0,
+              createAt: new Date(),
             })
             .then(() => {
               sendEmail();
